@@ -1,0 +1,61 @@
+version: "3.8"
+services:
+
+  football-tipsters:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
+    environment:
+      - KEYCLOAK_URL=http://keycloak:9000
+      - KEYCLOAK_REALM=tipsters
+      - KEYCLOAK_CLIENT=football-tipsters-api
+      - MONGODB_URI=mongodb://mongo:27017/football-tipsters
+    networks:
+      - keycloak-network
+      - mongo-network
+    depends_on:
+        - keycloak
+        - mongo
+
+  keycloak:
+    image: jboss/keycloak
+    ports:
+      - "9000:8080"
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=t!pper
+      - DB_VENDOR=POSTGRES
+      - DB_ADDR=postgres
+      - DB_DATABASE=keycloak
+      - DB_USER=keycloak
+      - DB_PASSWORD=p@ssword
+    depends_on:
+      - postgres
+    networks:
+      - keycloak-network
+
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_DB=keycloak
+      - POSTGRES_USER=keycloak
+      - POSTGRES_PASSWORD=p@ssword
+    networks:
+      - keycloak-network
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - mongo-network
+    environment:
+      - MONGO_INITDB_DATABASE=football-tipsters
+
+networks:
+  keycloak-network:
+  mongo-network:
