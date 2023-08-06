@@ -13,7 +13,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.time.Instant
 
-const val endpoint =  "https://api.the-odds-api.com/v4/sports/soccer_epl/odds/?apiKey=76bef19bae189a71c19de0cb13b7bd95&regions=uk"
+val apiKey = System.getenv("FIXTURES_API_KEY")
+val endpoint =  "https://api.the-odds-api.com/v4/sports/soccer_epl/odds/?apiKey=${apiKey}&regions=uk"
 class FixtureFinder {
     private val client = HttpClient(CIO) {
         install(Logging) {
